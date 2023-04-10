@@ -4,7 +4,6 @@ import Users from '../Users'
 import LoadPlanets from "./loadPlanets.js";
 
 export default function Planets() {
-
     const [planets, setPlanets] = useState([])
     const [planetsLoading, setPlanetsLoading] = useState(false)
     const [selectedPlanet, setSelectedPlanet] = useState("")
@@ -21,6 +20,9 @@ export default function Planets() {
                 setPlanetsLoading(false)
                 setPlanets(res.data.results);
                 setTotalPage(Math.ceil(res.data.count / 10));
+            })
+            .catch(error => {
+                console.log("Error", error.response)
             })
     }, [currentPage]);
 
@@ -42,14 +44,19 @@ export default function Planets() {
 
         if (usersApiUrls && usersApiUrls.length > 0) {
             const promises = usersApiUrls.map(url => axios.get(url));
-            Promise.all(promises).then(responses => {
-                let data = [];
-                responses.forEach(response => {
-                    data = data.concat(response.data);
+            Promise.all(promises)
+                .then(responses => {
+                    let data = [];
+                    responses.forEach(response => {
+                        data = data.concat(response.data);
+                    });
+                    setUsersData(data)
+                    setUsersLoading(false)
+                })
+                .catch(error => {
+                    console.log("Error", error.response)
                 });
-                setUsersData(data)
-                setUsersLoading(false)
-            });
+
         } else {
             setUsersData([])
             setUsersLoading(false)
